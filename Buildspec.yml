@@ -15,7 +15,10 @@ phases:
   build:
     commands:
       - mvn package -DskipTests=true
-
+  post_build:
+    commands:
+      - echo "Resetting BUILD_API flag to false"
+      - aws ssm put-parameter --name "/pipeline/BUILD_API" --value "false" --type "String" --overwrite
 artifacts:
   files:
     - target/*.jar
