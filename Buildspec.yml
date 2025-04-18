@@ -5,13 +5,13 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo "Checking if API build is needed..."
+      - echo "Fetching BUILD_API flag..."
+      - BUILD_API=$(aws ssm get-parameter --name "/pipeline/BUILD_API" --with-decryption --query "Parameter.Value" --output text)
+      - echo "BUILD_API is $BUILD_API"
       - if [ "$BUILD_API" = "false" ]; then echo "Skipping API build"; exit 0; fi
-
   pre_build:
     commands:
       - mvn clean
-
   build:
     commands:
       - mvn package -DskipTests=true
@@ -19,6 +19,7 @@ phases:
     commands:
       - echo "Resetting BUILD_API flag to false"
       - aws ssm put-parameter --name "/pipeline/BUILD_API" --value "false" --type "String" --overwrite
+
 artifacts:
   files:
     - target/*.jar
