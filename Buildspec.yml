@@ -4,9 +4,14 @@ phases:
   install:
     runtime-versions:
       java: corretto17
+    commands:
+      - echo "Checking if API build is needed..."
+      - if [ "$BUILD_API" = "false" ]; then echo "Skipping API build"; exit 0; fi
+
   pre_build:
     commands:
       - mvn clean
+
   build:
     commands:
       - mvn package -DskipTests=true
