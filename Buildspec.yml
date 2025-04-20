@@ -9,7 +9,7 @@ phases:
       - BUILD_API=$(aws ssm get-parameter --name "/pipeline/BUILD_API" --with-decryption --query "Parameter.Value" --output text)
       - echo "BUILD_API is $BUILD_API"
       - echo "$BUILD_API" > build_flag.txt
-      - rm -rf target/*.jar || true  # Clean up previous builds
+      - rm -rf target/*.jar || true
 
   pre_build:
     commands:
@@ -18,14 +18,19 @@ phases:
 
   build:
     commands:
-      - if [ "$(cat build_flag.txt)" = "false" ]; then echo "Skipping actual build phase"; exit 0; fi
+      - |
+        if [ "$(cat build_flag.txt)" = "false" ]; then 
+          echo "Skipping actual API build phase"; 
+          exit 0; 
+        fi
       - echo "Running mvn package"
       - mvn package -DskipTests=true
 
   post_build:
     commands:
-      - if [ "$(cat build_flag.txt)" = "false" ]; then echo "Resetting flag only (no build done)"; else echo "Resetting BUILD_API flag to false"; fi
-      - aws ssm put-parameter --name "/pipeline/BUILD_API" --value "false" --type "String" --overwrite
+      - |
+        echo "Resetting BUILD_API flag to false"
+        aws ssm put-parameter --name "/pipeline/BUILD_API" --value "false" --type "String" --overwrite
 
 artifacts:
   files:
