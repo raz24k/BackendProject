@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo "Fetching BUILD_API flag..."
+      - echo "Fetching BUILD_API flag...9"
       - BUILD_API=$(aws ssm get-parameter --name "/pipeline/BUILD_API" --with-decryption --query "Parameter.Value" --output text)
       - echo "BUILD_API is $BUILD_API"
       - echo "$BUILD_API" > build_flag.txt
