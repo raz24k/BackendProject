@@ -18,7 +18,7 @@ phases:
 
   build:
     commands:
-      - echo "Checking flag before running build"
+      - echo "Checking flag before running build1"
       - if [ "$(cat build_flag.txt)" = "false" ]; then echo "Skipping API build"; exit 0; fi
       - echo "Running mvn package"
       - mvn package -DskipTests=true
