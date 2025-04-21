@@ -18,19 +18,15 @@ phases:
 
   build:
     commands:
-      - |
-        if [ "$(cat build_flag.txt)" = "false" ]; then 
-          echo "Skipping actual API build phase"; 
-          exit 0; 
-        fi
+      - echo "Checking flag before running build"
+      - if [ "$(cat build_flag.txt)" = "false" ]; then echo "Skipping API build"; exit 0; fi
       - echo "Running mvn package"
       - mvn package -DskipTests=true
 
   post_build:
     commands:
-      - |
-        echo "Resetting BUILD_API flag to false"
-        aws ssm put-parameter --name "/pipeline/BUILD_API" --value "false" --type "String" --overwrite
+      - echo "Resetting BUILD_API flag to false"
+      - aws ssm put-parameter --name "/pipeline/BUILD_API" --value "false" --type "String" --overwrite
 
 artifacts:
   files:
